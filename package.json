@@ -6,7 +6,7 @@
   "scripts": {
      "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --watch \"./**/*.ts\" --exec \"node --loader ts-node/esm server.ts\"",
-    "build": "tsc",
+    "build": "tsc && npm install",
     "start": "node dist/server.js"
   },
   "keywords": [],
