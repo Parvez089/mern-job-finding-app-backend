@@ -13,7 +13,7 @@ export const verifyToken = (req: AuthenticatedRequest, res: Response, next: Next
       return res.status(401).json({ message: "Access denied. No token provided." });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
     req.user = decoded;
     next();
   } catch (error) {
