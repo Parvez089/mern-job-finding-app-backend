@@ -20,9 +20,6 @@ export const createJob = async (req: AuthenticatedRequest, res: Response) => {
       return res.status(403).json({ success: false, message: "Access denied" });
     }
 
-    // if(!user.id || !mongoose.Types.ObjectId.isValid(user.id)){
-    //   return res.status(400).json({success: false, message: "Invalid user ID"})
-    // }
 
     const {
       title,
