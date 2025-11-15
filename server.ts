@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import dbConnect from './config/database.js';
 import userRoutes from './routes/userRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
+import applicationRoutes from './routes/applicationRoutes.js';
 import cors from "cors";
 dotenv.config();
 
@@ -15,6 +16,7 @@ app.use(cors({
      methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 }));
+app.use(express.urlencoded({ extended: true }));
 dbConnect();
 
 app.get('/', (req, res) => {
@@ -24,6 +26,7 @@ app.get('/', (req, res) => {
 app.use(express.json());
 app.use("/api/auth", userRoutes)
 app.use("/api/job", jobRoutes)
+app.use("/api/job-applications", applicationRoutes)
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
