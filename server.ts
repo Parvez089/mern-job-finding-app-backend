@@ -1,9 +1,9 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import dbConnect from './config/database.js';
-import userRoutes from './routes/userRoutes.js';
-import jobRoutes from './routes/jobRoutes.js';
-import applicationRoutes from './routes/applicationRoutes.js';
+import dbConnect from "./config/database.js";
+import userRoutes from "./routes/userRoutes.js";
+import jobRoutes from "./routes/jobRoutes.js";
+
 import cors from "cors";
 dotenv.config();
 
@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 app.use(express.json());
 app.use("/api/auth", userRoutes)
 app.use("/api/job", jobRoutes)
-app.use("/api/job-applications", applicationRoutes)
+// app.use("/api/job-applications", applicationRoutes)
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

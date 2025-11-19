@@ -8,12 +8,12 @@ declare const Job: mongoose.Model<{
     location: string;
     salary: string;
     createdBy: mongoose.Types.ObjectId;
-    description?: string | null;
-    rate?: string | null;
-    jobSummary?: string | null;
-    responsibilities?: string | null;
-    qualifications?: string | null;
-    details?: string | null;
+    description?: string | null | undefined;
+    rate?: string | null | undefined;
+    jobSummary?: string | null | undefined;
+    responsibilities?: string | null | undefined;
+    qualifications?: string | null | undefined;
+    details?: string | null | undefined;
 } & mongoose.DefaultTimestampProps, {}, {}, {}, mongoose.Document<unknown, {}, {
     title: string;
     position: string;
@@ -23,12 +23,12 @@ declare const Job: mongoose.Model<{
     location: string;
     salary: string;
     createdBy: mongoose.Types.ObjectId;
-    description?: string | null;
-    rate?: string | null;
-    jobSummary?: string | null;
-    responsibilities?: string | null;
-    qualifications?: string | null;
-    details?: string | null;
+    description?: string | null | undefined;
+    rate?: string | null | undefined;
+    jobSummary?: string | null | undefined;
+    responsibilities?: string | null | undefined;
+    qualifications?: string | null | undefined;
+    details?: string | null | undefined;
 } & mongoose.DefaultTimestampProps, {}, {
     timestamps: true;
 }> & {
@@ -40,12 +40,12 @@ declare const Job: mongoose.Model<{
     location: string;
     salary: string;
     createdBy: mongoose.Types.ObjectId;
-    description?: string | null;
-    rate?: string | null;
-    jobSummary?: string | null;
-    responsibilities?: string | null;
-    qualifications?: string | null;
-    details?: string | null;
+    description?: string | null | undefined;
+    rate?: string | null | undefined;
+    jobSummary?: string | null | undefined;
+    responsibilities?: string | null | undefined;
+    qualifications?: string | null | undefined;
+    details?: string | null | undefined;
 } & mongoose.DefaultTimestampProps & {
     _id: mongoose.Types.ObjectId;
 } & {
@@ -61,12 +61,12 @@ declare const Job: mongoose.Model<{
     location: string;
     salary: string;
     createdBy: mongoose.Types.ObjectId;
-    description?: string | null;
-    rate?: string | null;
-    jobSummary?: string | null;
-    responsibilities?: string | null;
-    qualifications?: string | null;
-    details?: string | null;
+    description?: string | null | undefined;
+    rate?: string | null | undefined;
+    jobSummary?: string | null | undefined;
+    responsibilities?: string | null | undefined;
+    qualifications?: string | null | undefined;
+    details?: string | null | undefined;
 } & mongoose.DefaultTimestampProps, mongoose.Document<unknown, {}, mongoose.FlatRecord<{
     title: string;
     position: string;
@@ -76,12 +76,12 @@ declare const Job: mongoose.Model<{
     location: string;
     salary: string;
     createdBy: mongoose.Types.ObjectId;
-    description?: string | null;
-    rate?: string | null;
-    jobSummary?: string | null;
-    responsibilities?: string | null;
-    qualifications?: string | null;
-    details?: string | null;
+    description?: string | null | undefined;
+    rate?: string | null | undefined;
+    jobSummary?: string | null | undefined;
+    responsibilities?: string | null | undefined;
+    qualifications?: string | null | undefined;
+    details?: string | null | undefined;
 } & mongoose.DefaultTimestampProps>, {}, mongoose.ResolveSchemaOptions<{
     timestamps: true;
 }>> & mongoose.FlatRecord<{
@@ -93,16 +93,15 @@ declare const Job: mongoose.Model<{
     location: string;
     salary: string;
     createdBy: mongoose.Types.ObjectId;
-    description?: string | null;
-    rate?: string | null;
-    jobSummary?: string | null;
-    responsibilities?: string | null;
-    qualifications?: string | null;
-    details?: string | null;
+    description?: string | null | undefined;
+    rate?: string | null | undefined;
+    jobSummary?: string | null | undefined;
+    responsibilities?: string | null | undefined;
+    qualifications?: string | null | undefined;
+    details?: string | null | undefined;
 } & mongoose.DefaultTimestampProps> & {
     _id: mongoose.Types.ObjectId;
 } & {
     __v: number;
 }>>;
 export default Job;
-//# sourceMappingURL=job.d.ts.map

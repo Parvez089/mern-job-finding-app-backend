@@ -1,5 +1,4 @@
 /** @format */
-import User from "../models/User.js";
 import Job from "../models/job.js";
 import mongoose from "mongoose";
 // create job (only employer or admin)
@@ -9,9 +8,6 @@ export const createJob = async (req, res) => {
         if (!user || (user.role !== "employer" && user.role !== "admin")) {
             return res.status(403).json({ success: false, message: "Access denied" });
         }
-        // if(!user.id || !mongoose.Types.ObjectId.isValid(user.id)){
-        //   return res.status(400).json({success: false, message: "Invalid user ID"})
-        // }
         const { title, position, company, city, jobType, location, salary, jobSummary, responsibilities, details, } = req.body;
         // Validate required fields
         if (!title ||
