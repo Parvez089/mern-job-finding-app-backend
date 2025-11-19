@@ -45,4 +45,3 @@ declare const User: mongoose.Model<{
     __v: number;
 }>>;
 export default User;
-//# sourceMappingURL=User.d.ts.map

@@ -6,4 +6,3 @@ interface AuthenticatedRequest extends Request {
 export declare const verifyToken: (req: AuthenticatedRequest, res: Response, next: NextFunction) => Response<any, Record<string, any>> | undefined;
 export declare const checkRole: (roles: string[]) => (req: AuthenticatedRequest, res: Response, next: NextFunction) => Response<any, Record<string, any>> | undefined;
 export {};
-//# sourceMappingURL=token.d.ts.map

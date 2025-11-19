@@ -14,4 +14,3 @@ export declare const getSingleJob: (req: Request, res: Response) => Promise<Resp
 export declare const deleteJob: (req: AuthenticatedRequest, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
 export declare const applyJob: (req: AuthenticatedRequest, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
 export {};
-//# sourceMappingURL=jobController.d.ts.map

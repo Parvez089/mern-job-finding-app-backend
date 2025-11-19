@@ -4,7 +4,13 @@ export interface IJobApplication extends Document {
   applicantId: Types.ObjectId;
   name: string;
   email?: string;
-  resumeUrl?: string;
+    resume?: {
+    url?: string;
+    originalName?: string;
+    fileType?: string;
+    size?: number;
+    data?: Buffer; // optional: store file in DB
+  };
   experience?: {
     company?: string;
     role?: string;
@@ -30,7 +36,15 @@ const JobApplicationSchema = new Schema<IJobApplication>(
     applicantId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     name: { type: String, required: true },
     email: { type: String },
-    resumeUrl: { type: String },
+     resume: {
+      url: String,
+      originalName: String,
+      fileType: String,
+      size: Number,
+      data: Buffer, // OPTIONAL: not recommended for large files
+    },
+
+   
 
     experience: [
       {
