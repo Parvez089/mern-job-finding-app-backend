@@ -1,50 +1,44 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
-export interface IJobApplication extends Document {
-  appId: Types.ObjectId;
-  applicantId: Types.ObjectId;
-  name: string;
-  email?: string;
-    resume?: {
-    url?: string;
-    originalName?: string;
-    fileType?: string;
-    size?: number;
-    data?: Buffer; // optional: store file in DB
-  };
-  experience?: {
-    company?: string;
-    role?: string;
-    duration?: string;
-  }[];
-  education?: {
-    degree?: string;
-    institute?: string;
-    year?: string;
-  }[];
-  phone?: string;
-  address?: {
-    city?: string;
-    state?: string;
-    zip?: string;
-  };
+// models/jobApplication.ts
+import mongoose, { Schema, Document } from "mongoose";
+
+export interface IExperience {
+  company?: string;
+  role?: string;
+  duration?: string;
 }
 
+export interface IEducation {
+  degree?: string;
+  institute?: string;
+  year?: string;
+}
+
+export interface IAddress {
+  city?: string;
+  state?: string;
+  zip?: string;
+}
+
+export interface IJobApplication extends Document {
+  appId: string;
+  applicantId: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  resume?: string;
+  experience?: IExperience[];
+  education?: IEducation[];
+  address?: IAddress;
+}
 
 const JobApplicationSchema = new Schema<IJobApplication>(
   {
-    appId: { type: Schema.Types.ObjectId, ref: "Job", required: true },
-    applicantId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    appId: { type: String, required: true },
+    applicantId: { type: String, required: true },
     name: { type: String, required: true },
-    email: { type: String },
-     resume: {
-      url: String,
-      originalName: String,
-      fileType: String,
-      size: Number,
-      data: Buffer, // OPTIONAL: not recommended for large files
-    },
-
-   
+    email: String,
+    phone: String,
+    resume: String,
 
     experience: [
       {
@@ -62,8 +56,6 @@ const JobApplicationSchema = new Schema<IJobApplication>(
       },
     ],
 
-    phone: String,
-
     address: {
       city: String,
       state: String,
@@ -73,13 +65,7 @@ const JobApplicationSchema = new Schema<IJobApplication>(
   { timestamps: true }
 );
 
-const JobApplication = mongoose.model<IJobApplication>(
+export default mongoose.model<IJobApplication>(
   "JobApplication",
   JobApplicationSchema
 );
-
-export default JobApplication;
-
-
-
-
