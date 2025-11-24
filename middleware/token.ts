@@ -9,6 +9,7 @@ interface AuthenticatedRequest extends Request{
 export const verifyToken = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const token = req.header("Authorization")?.split(" ")[1];
+    console.log("TOKEN RECEIVED BACKEND ==> ", token);
     if (!token) {
       return res.status(401).json({ message: "Access denied. No token provided." });
     }
