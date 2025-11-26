@@ -140,6 +140,7 @@ export const deleteJob = async (req: AuthenticatedRequest, res: Response) => {
 export const applyJob = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const user = req.user;
+   
     if (!user || user.role !== "jobseeker") {
       return res
         .status(403)

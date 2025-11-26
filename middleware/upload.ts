@@ -3,7 +3,7 @@ import multer from "multer";
 import type { Request } from "express"; 
 
 // FIX: Added explicit '.js' extension for ESM compatibility
-import { cloudinary } from "../cloudinaryConfig.js"; 
+import cloudinary from "../config/cloudinary.ts"; 
 
 // --- Cloudinary storage setup ---
 const storage = new CloudinaryStorage({
@@ -25,23 +25,25 @@ const storage = new CloudinaryStorage({
 });
 
 // --- Multer instance ---
-const upload = multer({ 
-    storage,
-    limits: { 
-        fileSize: 10 * 1024 * 1024 // Max 10MB file size
-    },
-    // File Filter for security and validation
-    fileFilter: (req, file, cb) => {
-        if (file.mimetype === 'application/pdf' || 
-            file.mimetype === 'application/msword' || 
-            file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-            cb(null, true);
-        } else {
-            // Use 'null' instead of an Error object to show message in the response
-            cb(null, false, new Error("File type not supported. Only PDF, DOC, and DOCX allowed.") as any);
-        }
-    }
-});
+// const upload = multer({ 
+//     storage,
+//     limits: { 
+//         fileSize: 10 * 1024 * 1024 // Max 10MB file size
+//     },
+//     // File Filter for security and validation
+//     fileFilter: (req, file, cb) => {
+//         if (file.mimetype === 'application/pdf' || 
+//             file.mimetype === 'application/msword' || 
+//             file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+//             cb(null, true);
+//         } else {
+//             // Use 'null' instead of an Error object to show message in the response
+//             return cb(new Error("File type not supported. Only PDF, DOC, and DOCX allowed."));
+//         }
+//     }
+// });
+const upload = multer({ storage: multer.memoryStorage() });
+// console.log(upload)
 
 // Export the upload middleware
 export default upload;
