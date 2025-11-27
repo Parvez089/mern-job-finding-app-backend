@@ -3,10 +3,11 @@
 import type { JwtPayload } from "jsonwebtoken";
 
 import type { Request, Response } from "express";
+import User from "../models/User.ts"; 
 
-import User from "../models/User.js";
 import Job from "../models/job.js";
 import mongoose from "mongoose";
+import type { Auth } from "mongodb";
 
 interface AuthenticatedRequest extends Request {
   user?: JwtPayload & { id: string; role: string };
@@ -101,6 +102,54 @@ export const getSingleJob = async (req: Request, res: Response) => {
     res.status(500).json({
       message: "Error fetching job details",
       error: error.message,
+    });
+  }
+};
+
+
+export const updateJob = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const user = req.user as JwtPayload;
+    const jobId = req.params.id;
+
+    // Check access
+    if (!user || (user.role !== "employer" && user.role !== "admin")) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied! Only employer or admin can edit.",
+      });
+    }
+
+    const job = await Job.findById(jobId);
+    if (!job) {
+      return res.status(404).json({ success: false, message: "Job not found" });
+    }
+
+    // Employer can only update his own job
+    if (user.role === "employer" && job.createdBy.toString() !== user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to edit this job",
+      });
+    }
+
+    // Update job
+    const updatedJob = await Job.findByIdAndUpdate(
+      jobId,
+      { ...req.body },
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Job updated successfully",
+      job: updatedJob,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error updating job",
+      error,
     });
   }
 };

@@ -4,7 +4,6 @@ import type { Request, Response } from "express";
 // CORRECTED: Used datauri-parser (with hyphen)
 import cloudinary from "../config/cloudinary.ts";
 import DataURIParser from "datauri/parser.js";
-import type { IJobApplication } from "../models/jobApplication.ts";
 import jobApplication from "../models/jobApplication.ts";
 
 // Extend Request type to include the file property added by Multer
@@ -29,9 +28,8 @@ const handleError = (res: Response, error: unknown, statusCode = 500) => {
 const parser = new DataURIParser();
 
 // Converts the buffer from multer into a data URI string (e.g., 'data:image/jpeg;base64,...')
-const formatBufferToDataUri = (file: Express.Multer.File) => {
-  return parser.format(file.originalname, file.buffer);
-};
+const formatBufferToDataUri = (file: Express.Multer.File) => parser.format(file.originalname, file.buffer);
+
 const uploadToCloudinary = (fileBuffer: Buffer): Promise<any> => {
   return new Promise((resolve, reject) => {
     cloudinary.uploader
@@ -59,11 +57,25 @@ export const createApplication = async (req: CustomRequest, res: Response) => {
       phone,
       resume,
       experience,
+      company,
+      duration,
+      role,
+
       education,
+      degree,
+      institute,
+      year,
       address,
+      city,
+      state,
+      zip
     } = req.body;
     // console.log("body",req.body)
     // console.log("file",req.file)
+
+    const parsedExperience = experience ? JSON.parse(experience) : [];
+const parsedEducation = education ? JSON.parse(education) : [];
+const parsedAddress = address ? JSON.parse(address) : {};
     if (!appId || !applicantId || !name) {
       return res.status(400).json({
         message:
@@ -92,9 +104,18 @@ export const createApplication = async (req: CustomRequest, res: Response) => {
         email: email,
         phone: phone,
         resume: uploadResult?.secure_url,
-        experience: experience,
-        education: education,
-        address: address,
+        experience: parsedExperience,
+      company: company,
+      
+      role: role,
+        education: parsedEducation,
+        address: parsedAddress,
+         degree: degree,
+      institute: institute,
+      year:year,
+      city: city,
+      state: state,
+      zip: zip
       });
 
       return res.json({
@@ -110,84 +131,3 @@ export const createApplication = async (req: CustomRequest, res: Response) => {
   }
 };
 
-/**
- * @route GET /api/applications
- * @desc Get all job applications
- */
-// export const getAllApplications = async (req: Request, res: Response): Promise<void> => {
-//     try {
-//         const applications = await jobApplication.find({}).sort({ createdAt: -1 }); // Sort by newest first
-//         res.status(200).json(applications);
-//     } catch (error) {
-//         handleError(res, error);
-//     }
-// };
-
-/**
- * @route GET /api/applications/:id
- * @desc Get a single job application by ID
- */
-// export const getApplicationById = async (req: Request, res: Response): Promise<void> => {
-//     try {
-//         const application = await JobApplication.findById(req.params.id);
-
-//         if (!application) {
-//             res.status(404).json({ message: "Job Application not found" });
-//             return;
-//         }
-
-//         res.status(200).json(application);
-//     } catch (error) {
-//         handleError(res, error);
-//     }
-// };
-
-/**
- * @route PUT /api/applications/:id
- * @desc Update a job application by ID (Does not handle file updates in this version)
- */
-// export const updateApplication = async (req: Request, res: Response): Promise<void> => {
-//     try {
-//         const updatedApplication = await JobApplication.findByIdAndUpdate(
-//             req.params.id,
-//             req.body,
-//             { new: true, runValidators: true } 
-//         );
-
-//         if (!updatedApplication) {
-//             res.status(404).json({ message: "Job Application not found" });
-//             return;
-//         }
-
-//         res.status(200).json(updatedApplication);
-//     } catch (error) {
-//         handleError(res, error, 400);
-//     }
-// };
-
-/**
- * @route DELETE /api/applications/:id
- * @desc Delete a job application by ID
- */
-// export const deleteApplication = async (req: Request, res: Response): Promise<void> => {
-//     try {
-//         const application = await JobApplication.findById(req.params.id);
-
-//         if (!application) {
-//             res.status(404).json({ message: "Job Application not found" });
-//             return;
-//         }
-        
-//         // Optional: If a resume exists, delete it from Cloudinary for cleanup
-//         if (application.resume) {
-//             // Cloudinary public ID is derived from the URL (not implemented here, requires URL parsing)
-//             console.log(`Note: Resume file exists at ${application.resume}. Manual Cloudinary deletion may be required.`);
-//         }
-
-//         await JobApplication.deleteOne({ _id: req.params.id });
-
-//         res.status(200).json({ message: "Job Application successfully deleted" });
-//     } catch (error) {
-//         handleError(res, error);
-//     }
-// };
