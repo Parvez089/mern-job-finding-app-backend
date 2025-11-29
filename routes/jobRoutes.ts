@@ -1,4 +1,4 @@
-import { applyJob, deleteJob, getMyJobs, getSingleJob, updateJob } from './../controller/jobController.js';
+import { applyJob, deleteJob, getMyJobs, getSingleJob, increaseJobView, updateJob } from './../controller/jobController.js';
 import express from "express"
 import { checkRole, verifyToken } from "../middleware/token.js";
 import { createJob, getAllJobs } from "../controller/jobController.js";
@@ -12,5 +12,6 @@ router.get("/:id",getSingleJob)
 router.put("/:id", verifyToken, updateJob);
 router.delete("/:id", verifyToken, checkRole(["employer", "admin"]), deleteJob)
 router.post("/:id/apply", verifyToken, checkRole(["jobseeker"]), applyJob)
+router.get("/job/view/:jobId", verifyToken, increaseJobView);
 
 export default router;

@@ -1,3 +1,7 @@
+
+/** @format */
+
+import mongoose from "mongoose";
 import type { Request, Response } from "express";
 // Assuming jobApplication.model is the path to your schema file
 
@@ -5,10 +9,17 @@ import type { Request, Response } from "express";
 import cloudinary from "../config/cloudinary.ts";
 import DataURIParser from "datauri/parser.js";
 import jobApplication from "../models/jobApplication.ts";
+import Job from "../models/job.ts";
+import { join } from "path";
+import { stringify } from "querystring";
 
 // Extend Request type to include the file property added by Multer
 interface CustomRequest extends Request {
-    file?: Express.Multer.File;
+  file?: Express.Multer.File;
+}
+
+interface AuthenticatedRequest extends Request {
+  user?: { id: string; role: string };
 }
 
 // Helper function for error handling
@@ -28,7 +39,8 @@ const handleError = (res: Response, error: unknown, statusCode = 500) => {
 const parser = new DataURIParser();
 
 // Converts the buffer from multer into a data URI string (e.g., 'data:image/jpeg;base64,...')
-const formatBufferToDataUri = (file: Express.Multer.File) => parser.format(file.originalname, file.buffer);
+const formatBufferToDataUri = (file: Express.Multer.File) =>
+  parser.format(file.originalname, file.buffer);
 
 const uploadToCloudinary = (fileBuffer: Buffer): Promise<any> => {
   return new Promise((resolve, reject) => {
@@ -68,14 +80,14 @@ export const createApplication = async (req: CustomRequest, res: Response) => {
       address,
       city,
       state,
-      zip
+      zip,
     } = req.body;
     // console.log("body",req.body)
     // console.log("file",req.file)
 
     const parsedExperience = experience ? JSON.parse(experience) : [];
-const parsedEducation = education ? JSON.parse(education) : [];
-const parsedAddress = address ? JSON.parse(address) : {};
+    const parsedEducation = education ? JSON.parse(education) : [];
+    const parsedAddress = address ? JSON.parse(address) : {};
     if (!appId || !applicantId || !name) {
       return res.status(400).json({
         message:
@@ -105,17 +117,17 @@ const parsedAddress = address ? JSON.parse(address) : {};
         phone: phone,
         resume: uploadResult?.secure_url,
         experience: parsedExperience,
-      company: company,
-      
-      role: role,
+        company: company,
+
+        role: role,
         education: parsedEducation,
         address: parsedAddress,
-         degree: degree,
-      institute: institute,
-      year:year,
-      city: city,
-      state: state,
-      zip: zip
+        degree: degree,
+        institute: institute,
+        year: year,
+        city: city,
+        state: state,
+        zip: zip,
       });
 
       return res.json({
@@ -131,3 +143,157 @@ const parsedAddress = address ? JSON.parse(address) : {};
   }
 };
 
+// @Get All application for a job (only employer who posted it)
+
+export const getApplicationByJob = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    const { jobId } = req.params;
+    const employerId = req.user?.id;
+
+    if (!mongoose.Types.ObjectId.isValid(jobId))
+      return res.status(400).json({ message: "Invalid Job Id" });
+
+    const job = await Job.findById(jobId);
+    if (!job) return res.status(404).json({ message: "Job not found" });
+
+    const jobEmployerId = (job.createdBy as mongoose.Types.ObjectId).toString();
+    if (jobEmployerId !== employerId)
+      return res.status(403).json({ message: "Unauthorized" });
+    const applications = await jobApplication
+      .find({ appId: jobId })
+      .populate("applicantId", "name email phone resume");
+    res.json({ applications });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Total Applicants across All jobs of Employer
+
+export const getTotalApplicantsByEmployer = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    const employerId = req.user?.id;
+
+    if (!employerId) return res.status(401).json({ message: "Unauthorized" });
+
+    // 1️⃣ Find all jobs created by this employer
+    const jobs = await Job.find({ createdBy: employerId }).select("_id");
+
+    const jobIds = jobs.map((job) => job._id);
+
+    if (jobIds.length === 0)
+      return res.json({ totalApplicants: 0, message: "No jobs posted yet" });
+
+    // 2️⃣ Count all applications for these jobs
+    const totalApplicantsNumber = await jobApplication.countDocuments({
+      appId: { $in: jobIds },
+    });
+
+    let totalApplicants: string;
+    if (totalApplicantsNumber < 0) {
+      totalApplicants = "00"; // never negative
+    } else if (totalApplicantsNumber < 10) {
+      totalApplicants = "0" + totalApplicantsNumber; // add leading zero
+    } else {
+      totalApplicants = totalApplicantsNumber.toString();
+    }
+
+    res.json({ totalApplicants });
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
+// controllers/applicationController.ts
+// export const getApplicantsDetailsByEmployer = async (
+//   req: AuthenticatedRequest,
+//   res: Response
+// ) => {
+//   try {
+//     const employerId = req.user?.id;
+
+//     if (!employerId) {
+//       return res.status(401).json({ message: "Unauthorized" });
+//     }
+
+//     // 1️⃣ Find all jobs created by this employer
+//     const jobs = await Job.find({ createdBy: employerId }).select("_id title");
+//     if (!jobs.length) {
+//       return res.json({ message: "No jobs posted yet", applicants: [] });
+//     }
+
+//     const jobIds = jobs.map((job) => job._id);
+
+//     // 2️⃣ Find all applications for these jobs
+//     const applicants = await jobApplication
+//       .find({ appId: { $in: jobIds } })
+//       .populate("applicantId", "name email phone") // populate applicant info if referenced
+//       .lean(); // convert to plain JS objects
+
+//     // 3️⃣ Map applicants with job title
+//     const result = applicants.map((app) => {
+//       const job = jobs.find((j) => j._id.toString() === app.appId.toString());
+//       return {
+//         applicantName: app.name,
+//         jobTitle: job?.title || "Unknown Job",
+//         email: app.email || app.applicantId?.email || "",
+//         phone: app.phone || app.applicantId?.phone || "",
+//         appliedAt: app.createdAt,
+//       };
+//     });
+
+//     res.json({ applicants: result });
+//   } catch (error) {
+//     handleError(res, error);
+//   }
+// };
+
+export const getTotalJobByEmployer = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    const employerId = req.user?.id;
+
+    if (!employerId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const totalJobs = await Job.countDocuments({ createdBy: employerId });
+
+    let totalEmployerJob: String;
+
+    if (totalJobs < 0) {
+      totalEmployerJob = "00";
+    } else if (totalJobs < 10) {
+      totalEmployerJob = "0" + totalJobs;
+    } else {
+      totalEmployerJob = totalJobs.toString();
+    }
+
+    res.json({ totalJobs: totalEmployerJob });
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
+
+export const getTotalJobViewsByEmployer = async(req: AuthenticatedRequest, res: Response)=>{
+  try{
+    const employerId = req.user?.id;
+      const jobs = await Job.find({ createdBy: employerId }).select("views");
+
+    const totalViews = jobs.reduce((sum, job) => sum + Number(job.views || 0),0);
+
+    res.json({totalViews})
+  } catch(error){
+    console.log(error)
+  }
+}

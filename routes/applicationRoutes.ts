@@ -1,6 +1,8 @@
+
 import { Router } from "express";
 import multer from "multer"; // Middleware for handling file uploads
-import { createApplication,  } from "../controller/jobApplicationController.ts";
+import { createApplication, getApplicationByJob, getTotalApplicantsByEmployer, getTotalJobByEmployer, getTotalJobViewsByEmployer,  } from "../controller/jobApplicationController.ts";
+import { verifyToken } from "../middleware/token.ts";
 
 
 const router = Router();
@@ -23,6 +25,10 @@ router.route("/")
     // .get(getAllApplications)
     .post(upload.single('resumeFile'), createApplication); 
 
+router.get("/job/:jobId", verifyToken, getApplicationByJob)
+router.get("/employer/applicants", verifyToken, getTotalApplicantsByEmployer);
+router.get("/employer/total-jobs", verifyToken, getTotalJobByEmployer);
+router.get("/employer/total-job-views", verifyToken, getTotalJobViewsByEmployer)
 // ID-based routes (GET, PUT, DELETE)
 // router.route("/:id")
 //     .get(getApplicationById)

@@ -28,7 +28,7 @@ app.use("/api/auth", userRoutes);
 app.use("/api/job", jobRoutes);
 app.use('/api/applications', jobApplicationRouter);
 // ✅ Default route
-app.get('/', (req, res) => {
+app.get('/test', (req, res) => {
   res.send('Welcome to my server!');
 });
 
