@@ -48,6 +48,10 @@ const JobSchema = new mongoose.Schema(
     details: {
       type: String,
     },
+    views: {
+      type: Number,
+      default: 0,
+    },
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

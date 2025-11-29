@@ -1,13 +1,15 @@
+
 /** @format */
 
 import type { JwtPayload } from "jsonwebtoken";
 
 import type { Request, Response } from "express";
-import User from "../models/User.ts"; 
+
 
 import Job from "../models/job.js";
 import mongoose from "mongoose";
-import type { Auth } from "mongodb";
+
+
 
 interface AuthenticatedRequest extends Request {
   user?: JwtPayload & { id: string; role: string };
@@ -211,3 +213,17 @@ export const applyJob = async (req: AuthenticatedRequest, res: Response) => {
       .json({ success: false, message: "Error applying for job", error });
   }
 };
+
+
+export const increaseJobView = async(req: AuthenticatedRequest, res: Response) =>{
+  try{
+    const {jobId} = req.params;
+    
+
+    await Job.findByIdAndUpdate(jobId, {$inc: {views: 1}});
+
+    res.json({message: "View updated"});
+  } catch(err){
+    res.status(500).json({error: "Error updating job views"});
+  }
+}
