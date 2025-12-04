@@ -5,6 +5,7 @@ import dbConnect from './config/database.js';
 import userRoutes from './routes/userRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
 import jobApplicationRouter from './routes/applicationRoutes.js';
+import employerRouters from "./routes/employerRoutes.ts";
 
 dotenv.config();
 dbConnect();
@@ -17,16 +18,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ✅ CORS middleware
-app.use(cors({
-  origin: "http://localhost:3000",
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 // ✅ Routes
 app.use("/api/auth", userRoutes);
 app.use("/api/job", jobRoutes);
-app.use('/api/applications', jobApplicationRouter);
+app.use("/api/applications", jobApplicationRouter);
+app.use("/api/employer", employerRouters);
 // ✅ Default route
 app.get('/test', (req, res) => {
   res.send('Welcome to my server!');

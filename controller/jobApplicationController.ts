@@ -211,49 +211,6 @@ export const getTotalApplicantsByEmployer = async (
   }
 };
 
-// controllers/applicationController.ts
-// export const getApplicantsDetailsByEmployer = async (
-//   req: AuthenticatedRequest,
-//   res: Response
-// ) => {
-//   try {
-//     const employerId = req.user?.id;
-
-//     if (!employerId) {
-//       return res.status(401).json({ message: "Unauthorized" });
-//     }
-
-//     // 1️⃣ Find all jobs created by this employer
-//     const jobs = await Job.find({ createdBy: employerId }).select("_id title");
-//     if (!jobs.length) {
-//       return res.json({ message: "No jobs posted yet", applicants: [] });
-//     }
-
-//     const jobIds = jobs.map((job) => job._id);
-
-//     // 2️⃣ Find all applications for these jobs
-//     const applicants = await jobApplication
-//       .find({ appId: { $in: jobIds } })
-//       .populate("applicantId", "name email phone") // populate applicant info if referenced
-//       .lean(); // convert to plain JS objects
-
-//     // 3️⃣ Map applicants with job title
-//     const result = applicants.map((app) => {
-//       const job = jobs.find((j) => j._id.toString() === app.appId.toString());
-//       return {
-//         applicantName: app.name,
-//         jobTitle: job?.title || "Unknown Job",
-//         email: app.email || app.applicantId?.email || "",
-//         phone: app.phone || app.applicantId?.phone || "",
-//         appliedAt: app.createdAt,
-//       };
-//     });
-
-//     res.json({ applicants: result });
-//   } catch (error) {
-//     handleError(res, error);
-//   }
-// };
 
 export const getTotalJobByEmployer = async (
   req: AuthenticatedRequest,
