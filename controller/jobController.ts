@@ -70,8 +70,29 @@ export const createJob = async (req: AuthenticatedRequest, res: Response) => {
 
 export const getAllJobs = async (req: Request, res: Response) => {
   try {
-    const jobs = await Job.find().populate("createdBy", "name role");
-    res.status(200).json(jobs);
+       const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 12;
+    const skip = (page - 1) * limit;
+
+    const totalJobs = await Job.countDocuments();
+
+    const jobs = await Job.find()
+      .populate("createdBy", "name role")
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    const totalPages = Math.ceil(totalJobs / limit);
+
+    res.status(200).json({
+      jobs,
+      pagination: {
+        totalJobs,
+        totalPages,
+        currentPage: page,
+        pageSize: limit,
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: "Error fetching jobs", error });
   }
