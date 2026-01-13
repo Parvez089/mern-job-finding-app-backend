@@ -3,12 +3,21 @@
 import express from "express";
 import multer from "multer";
 import { verifyToken } from "../middleware/token.ts";
-import { getEmployerProfile } from "../controller/employerController.ts"
+import {
+  getEmployerProfile,
+  updateEmployerProfile,
+} from "../controller/employerController.ts";
 const router = express.Router();
 
-const upload = multer({storage: multer.memoryStorage()});
+const upload = multer({ storage: multer.memoryStorage() });
 
 router.get("/me", verifyToken, getEmployerProfile as any);
 
+router.patch(
+  "/update",
+  verifyToken,
+  upload.single("file"),
+  updateEmployerProfile as any
+);
 
 export default router;
