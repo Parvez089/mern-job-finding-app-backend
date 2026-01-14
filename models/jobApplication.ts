@@ -26,6 +26,7 @@ export interface IJobApplication extends Document {
   email?: string;
   phone?: string;
   resume?: string;
+  status: string;
   experience?: IExperience[];
   education?: IEducation[];
   address?: IAddress;
@@ -36,6 +37,11 @@ const JobApplicationSchema = new Schema<IJobApplication>(
     appId: { type: String, required: true },
     applicantId: { type: String, required: true },
     name: { type: String, required: true },
+    status: {
+      type: String,
+      enum: ["pending", "interviewing", "hired", "rejected"],
+      default: "[ending",
+    },
     email: String,
     phone: String,
     resume: String,
