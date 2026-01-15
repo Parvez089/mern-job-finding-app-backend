@@ -37,7 +37,13 @@ export const getEmployerProfile = async (req: AuthenticatedRequest, res: Respons
         const user = await User.findById(userId).select("-passowrd");
         if(!user) return res.status(404).json({success: false, message: "User not found"})
 
-        res.json({success: true, message: user})
+        res.status(200).json({
+          name: user.name,
+          companyName: user.companyName || "No Company Set",
+          profilePicture: user.ProfileImage?.secure_url || null,
+          email: user.email,
+          position: user.position,
+        });
     } catch(error){
         handleError(res,error)
     }

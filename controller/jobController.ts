@@ -248,3 +248,24 @@ export const increaseJobView = async(req: AuthenticatedRequest, res: Response) =
     res.status(500).json({error: "Error updating job views"});
   }
 }
+
+
+// export const getRecentJobs = async (req: any, res: Response) =>{
+//   try{
+//     const employerId = req.user.id;
+
+//     const jobs = (await Job.find({createdBy: employerId})).sort({createdAt: -1}).limit(3).lean<IJob>();
+
+//     const formattedJobs = jobs.map(job => ({
+//       id: job._id,
+//       title: job.title,
+//       company: job.location,
+//       department: job.department,
+//       datePosted: job.createdAt,
+//       applicants: job.applicantCount || 0,
+//       status: job.status,
+//     }))
+//   } catch (error){
+//     res.status(500).json({message: "Error fetching recent jobs"})
+//   }
+// }

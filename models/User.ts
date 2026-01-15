@@ -11,38 +11,43 @@ const ImageSchema = new mongoose.Schema({
   format: String,
   resource_type: String,
 }, { _id: false })
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema(
+  {
     name: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     email: {
-        type: String,
-        required: true,
-        unique: true,
-        lowercase: true,
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
     },
     password: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     role: {
-        type: String,
-        enum: ["admin", "jobseeker", "employer"],
-        default: "jobseeker"
+      type: String,
+      enum: ["admin", "jobseeker", "employer"],
+      default: "jobseeker",
     },
     phone: {
-        type: String,
+      type: String,
     },
     position: {
-        type: String,
+      type: String,
+    },
+    companyName: {
+      type: String,
     },
     ProfileImage: {
-        type: ImageSchema,
-        default: null
-
-    }
-}, { timestamps: true });
+      type: ImageSchema,
+      default: null,
+    },
+  },
+  { timestamps: true }
+);
 
 
 const User = mongoose.model("User", userSchema);
