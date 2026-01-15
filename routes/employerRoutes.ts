@@ -7,6 +7,7 @@ import {
   getEmployerProfile,
   updateEmployerProfile,
 } from "../controller/employerController.ts";
+import { getHiringTrend } from "../controller/ChartStateController.ts";
 const router = express.Router();
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -19,5 +20,5 @@ router.patch(
   upload.single("file"),
   updateEmployerProfile as any
 );
-
+router.get("/hiring-trends", getHiringTrend);
 export default router;
