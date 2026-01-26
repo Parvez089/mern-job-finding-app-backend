@@ -40,7 +40,7 @@ const JobApplicationSchema = new Schema<IJobApplication>(
     status: {
       type: String,
       enum: ["pending", "interviewing", "hired", "rejected"],
-      default: "[ending",
+      default: "pending",
     },
     email: String,
     phone: String,

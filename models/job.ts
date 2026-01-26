@@ -6,19 +6,12 @@ const JobSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    position: {
+    department: {
       type: String,
-      required: true,
+      require: true,
     },
+
     company: {
-      type: String,
-      required: true,
-    },
-    city: {
-      type: String,
-      required: true,
-    },
-    jobType: {
       type: String,
       required: true,
     },
@@ -26,40 +19,63 @@ const JobSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    rate: {
-      type: String,
+    isRemote: {
+      type: Boolean,
+      default: false,
     },
+
+    jobType: {
+      type: String,
+      required: true,
+    },
+
     salary: {
       type: String,
       required: true,
     },
+
+    //  Description & Responsibilities
     description: {
-      type: String,
-    },
-    jobSummary: {
       type: String,
     },
     responsibilities: {
       type: String,
     },
-    qualifications: {
+
+    // Requirements Section
+
+    skills: [{ type: String }],
+    experienceLevel: { type: String },
+    education: { type: String },
+
+    // Team & Culture Section
+    workCulture: [{ type: String }],
+    perks: [{ type: String }],
+    teamIntroduction: { type: String },
+
+    // Status & Visibility
+    status: {
       type: String,
+      enum: ["draft", "published"],
+      default: "draft",
     },
-    details: {
+    visibility: {
       type: String,
+      enum: ["public", "private"],
+      default: "public",
     },
-    views: {
-      type: Number,
-      default: 0,
+    externalPosting: {
+      type: Boolean,
     },
 
+    views: { type: Number, default: 0 },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 
