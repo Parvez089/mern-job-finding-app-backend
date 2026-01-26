@@ -23,48 +23,61 @@ export const createJob = async (req: AuthenticatedRequest, res: Response) => {
       return res.status(403).json({ success: false, message: "Access denied" });
     }
 
-
     const {
       title,
-      position,
+      department,
       company,
-      city,
-      jobType,
       location,
+      jobType,
       salary,
-      jobSummary,
+      description,
+      skills,
+      perks,
+      cultures,
+      experience,
       responsibilities,
-      details,
+      education,
+      visibility,
     } = req.body;
 
-    // Validate required fields
-    if (
-      !title ||
-      !position ||
-      !company ||
-      !city ||
-      !jobType ||
-      !location ||
-      !salary
-    ) {
+    
+    if (!title || !department || !company || !salary || !jobType || !location) {
       return res
         .status(400)
         .json({ success: false, message: "Missing required fields" });
     }
+
     const newJob = await Job.create({
-      ...req.body,
-      createdBy: new mongoose.Types.ObjectId(user.id),
+      title,
+      department,
+      company,
+      location,
+      jobType,
+      salary,
+      description,
+      skills: skills || [],
+      perks: perks || [],
+      workCulture: cultures || [], // cultures -> workCulture
+      experienceLevel: experience, // experience -> experienceLevel
+      responsibilities: responsibilities || "",
+      education: education || "",
+      visibility: visibility || "public",
+      createdBy: user.id,
+      status: "published",
     });
 
-    res
-      .status(201)
-      .json({
-        success: true,
-        message: "Job created successfully",
-        job: newJob,
-      });
-  } catch (error) {
-    res.status(500).json({ message: "Error creating job", error });
+    return res.status(201).json({
+      success: true,
+      message: "Job created successfully",
+      job: newJob,
+    });
+  } catch (error: any) {
+    console.error("BACKEND ERROR:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Failed to create job",
+      error: error.message,
+    });
   }
 };
 

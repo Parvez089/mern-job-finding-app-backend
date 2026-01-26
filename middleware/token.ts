@@ -6,19 +6,26 @@ interface AuthenticatedRequest extends Request{
   user?: string| JwtPayload;
 }
 
-export const verifyToken = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const verifyToken = (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const token = req.header("Authorization")?.split(" ")[1];
-    console.log("TOKEN RECEIVED BACKEND ==> ", token);
-    if (!token) {
-      return res.status(401).json({ message: "Access denied. No token provided." });
+    const authHeader = req.header("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "No token provided." });
     }
+    const token = authHeader.split(" ")[1];
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET as string,
+    ) as JwtPayload;
     req.user = decoded;
     next();
-  } catch (error) {
-     console.error("JWT VERIFY ERROR:", error);
+  } catch (error: any) {
+    console.log("JWT Error:", error.message);
     res.status(401).json({ message: "Invalid or expired token" });
   }
 };
