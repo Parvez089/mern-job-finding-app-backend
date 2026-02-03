@@ -57,8 +57,8 @@ export const createJob = async (req: AuthenticatedRequest, res: Response) => {
       description,
       skills: skills || [],
       perks: perks || [],
-      workCulture: cultures || [], // cultures -> workCulture
-      experienceLevel: experience, // experience -> experienceLevel
+      cultures: cultures || [],
+      experience: experience,
       responsibilities: responsibilities || "",
       education: education || "",
       visibility: visibility || "public",

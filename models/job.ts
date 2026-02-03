@@ -8,7 +8,7 @@ const JobSchema = new mongoose.Schema(
     },
     department: {
       type: String,
-      require: true,
+      required: true,
     },
 
     company: {
@@ -45,11 +45,11 @@ const JobSchema = new mongoose.Schema(
     // Requirements Section
 
     skills: [{ type: String }],
-    experienceLevel: { type: String },
+    experience: { type: String },
     education: { type: String },
 
     // Team & Culture Section
-    workCulture: [{ type: String }],
+    cultures: [{ type: String }],
     perks: [{ type: String }],
     teamIntroduction: { type: String },
 
