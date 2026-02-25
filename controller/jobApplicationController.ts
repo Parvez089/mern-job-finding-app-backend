@@ -14,13 +14,12 @@ import { join } from "path";
 import { stringify } from "querystring";
 
 // Extend Request type to include the file property added by Multer
-interface CustomRequest extends Request {
+interface AuthenticatedRequest extends Request {
+  user?: { id: string; role: string };
   file?: Express.Multer.File;
 }
 
-interface AuthenticatedRequest extends Request {
-  user?: { id: string; role: string };
-}
+
 
 // Helper function for error handling
 const handleError = (res: Response, error: unknown, statusCode = 500) => {
@@ -56,7 +55,7 @@ const uploadToCloudinary = (fileBuffer: Buffer): Promise<any> => {
  * @route POST /api/applications
  * @desc Create a new job application and handle resume upload
  */
-export const createApplication = async (req: CustomRequest, res: Response) => {
+export const createApplication = async (req: AuthenticatedRequest, res: Response) => {
   let resumeUrl: string | undefined = undefined;
 
   try {
@@ -176,38 +175,46 @@ export const getApplicationByJob = async (
 
 export const getTotalApplicantsByEmployer = async (
   req: AuthenticatedRequest,
-  res: Response
+  res: Response,
 ) => {
   try {
     const employerId = req.user?.id;
 
-    if (!employerId) return res.status(401).json({ message: "Unauthorized" });
+    const applications = await Job.find()
+      .populate({
+        path: "jobId",
+        match: { createdBy: employerId },
+        select: "title department",
+      })
+      .populate("userId", "name email avatar")
+      .sort({ createdAt: -1 });
 
-    // 1️⃣ Find all jobs created by this employer
-    const jobs = await Job.find({ createdBy: employerId }).select("_id");
+    const filteredApps = applications.filter((app : any) => app.jobId !== null);
 
-    const jobIds = jobs.map((job) => job._id);
+    const formattedData = filteredApps.map((app: any) => ({
+      _id: app._id,
+      name: app.userId?.name || "Anonymous",
+      email: app.userId?.email || "N/A",
+      avatar: app.userId?.avatar || "",
+      jobApplied: app.jobId?.title || "Unknown Job",
+      stage: app.status || "Applied",
+      appliedDate: new Date(app.createdAt).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }),
+      rating: app.rating || 0,
+    }));
 
-    if (jobIds.length === 0)
-      return res.json({ totalApplicants: 0, message: "No jobs posted yet" });
-
-    // 2️⃣ Count all applications for these jobs
-    const totalApplicantsNumber = await jobApplication.countDocuments({
-      appId: { $in: jobIds },
+    res.status(200).json({
+      success: true,
+      data: formattedData,
     });
-
-    let totalApplicants: string;
-    if (totalApplicantsNumber < 0) {
-      totalApplicants = "00"; // never negative
-    } else if (totalApplicantsNumber < 10) {
-      totalApplicants = "0" + totalApplicantsNumber; // add leading zero
-    } else {
-      totalApplicants = totalApplicantsNumber.toString();
-    }
-
-    res.json({ totalApplicants });
-  } catch (error) {
-    handleError(res, error);
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
