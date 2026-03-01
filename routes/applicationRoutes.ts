@@ -1,7 +1,7 @@
 
 import { Router } from "express";
 import multer from "multer"; // Middleware for handling file uploads
-import { createApplication, getApplicationByJob, getTotalApplicantsByEmployer, getTotalJobByEmployer, getTotalJobViewsByEmployer,  } from "../controller/jobApplicationController.ts";
+import { createApplication, getApplicationByJob, getApplicationDetails, getTotalApplicantsByEmployer, getTotalJobByEmployer, getTotalJobViewsByEmployer,  } from "../controller/jobApplicationController.ts";
 import { verifyToken } from "../middleware/token.ts";
 import { getEmployerStats } from "../controller/EmployerStats.ts";
 
@@ -40,5 +40,5 @@ router.get(
 //     .put(updateApplication)
 //     .delete(deleteApplication);
 router.get("/employer/dashboard-stats", verifyToken, getEmployerStats);
-
+router.get("/details/:id", verifyToken, getApplicationDetails)
 export default router;

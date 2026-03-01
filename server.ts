@@ -6,7 +6,7 @@ import userRoutes from './routes/userRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
 import jobApplicationRouter from './routes/applicationRoutes.js';
 import employerRouters from "./routes/employerRoutes.ts";
-
+import applicantsRouter from "./routes/ApplicantsRoutes.ts";
 dotenv.config();
 dbConnect();
 
@@ -23,13 +23,15 @@ app.use(
     origin: "http://localhost:3000",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
-  })
+  }),
 );
 
 // ✅ Routes
 app.use("/api/auth", userRoutes);
 app.use("/api/job", jobRoutes);
 app.use("/api/applications", jobApplicationRouter);
+// app.use("/api/application", applicantsRouter);
+
 app.use("/api/employer", employerRouters);
 // ✅ Default route
 app.get('/test', (req, res) => {

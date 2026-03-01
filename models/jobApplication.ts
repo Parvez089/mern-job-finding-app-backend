@@ -1,5 +1,5 @@
 // models/jobApplication.ts
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface IExperience {
   company?: string;
@@ -20,8 +20,8 @@ export interface IAddress {
 }
 
 export interface IJobApplication extends Document {
-  appId: string;
-  applicantId: string;
+  appId: Types.ObjectId;
+  applicantId: Types.ObjectId;
   name: string;
   email?: string;
   phone?: string;
@@ -34,8 +34,8 @@ export interface IJobApplication extends Document {
 
 const JobApplicationSchema = new Schema<IJobApplication>(
   {
-    appId: { type: String, required: true },
-    applicantId: { type: String, required: true },
+  appId: { type: Schema.Types.ObjectId, ref: "Job", required: true },
+    applicantId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     name: { type: String, required: true },
     status: {
       type: String,
@@ -45,30 +45,12 @@ const JobApplicationSchema = new Schema<IJobApplication>(
     email: String,
     phone: String,
     resume: String,
-
-    experience: [
-      {
-        company: String,
-        role: String,
-        duration: String,
-      },
-    ],
-
-    education: [
-      {
-        degree: String,
-        institute: String,
-        year: String,
-      },
-    ],
-
-    address: {
-      city: String,
-      state: String,
-      zip: String,
-    },
+experience: { type: [Schema.Types.Mixed], default: [] },
+    education: { type: [Schema.Types.Mixed], default: [] },
+    address: { type: Schema.Types.Mixed, default: {} },
   },
-  { timestamps: true }
+
+  { timestamps: true },
 );
 
 export default mongoose.model<IJobApplication>(

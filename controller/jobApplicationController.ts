@@ -173,48 +173,40 @@ export const getApplicationByJob = async (
 
 // Total Applicants across All jobs of Employer
 
-export const getTotalApplicantsByEmployer = async (
-  req: AuthenticatedRequest,
-  res: Response,
-) => {
+export const getTotalApplicantsByEmployer = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const employerId = req.user?.id;
+    if (!employerId) return res.status(401).json({ message: "Unauthorized" });
 
-    const applications = await Job.find()
-      .populate({
-        path: "jobId",
-        match: { createdBy: employerId },
-        select: "title department",
+    // ১. এমপ্লয়ারের সব জবের আইডি বের করা (এগুলো ObjectId ফরম্যাটে থাকে)
+    const employerJobs = await Job.find({ createdBy: employerId }).select("_id");
+    
+    // ২. আইডিগুলোকে String এবং ObjectId উভয় ফরম্যাটে অ্যারেতে রাখা
+    const jobIds = employerJobs.map(job => job._id);
+    const jobIdStrings = jobIds.map(id => id.toString());
+
+    // ৩. কোয়েরি করার সময় $in অপারেটরে দুটি ফরম্যাটই ব্যবহার করা
+    const applications = await jobApplication
+      .find({ 
+        appId: { $in: [...jobIds, ...jobIdStrings] } 
       })
-      .populate("userId", "name email avatar")
+      .populate("appId", "title department")
+      .populate("applicantId", "name email avatar")
       .sort({ createdAt: -1 });
 
-    const filteredApps = applications.filter((app : any) => app.jobId !== null);
-
-    const formattedData = filteredApps.map((app: any) => ({
+    // ৪. ডাটা ফরম্যাটিং
+    const formattedData = applications.map((app: any) => ({
       _id: app._id,
-      name: app.userId?.name || "Anonymous",
-      email: app.userId?.email || "N/A",
-      avatar: app.userId?.avatar || "",
-      jobApplied: app.jobId?.title || "Unknown Job",
-      stage: app.status || "Applied",
-      appliedDate: new Date(app.createdAt).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      }),
-      rating: app.rating || 0,
+      name: app.name || app.applicantId?.name || "Anonymous",
+      email: app.email || app.applicantId?.email,
+      jobApplied: app.appId?.title || "N/A", // যদি পপুলেশন না হয় তবে N/A দেখাবে
+      stage: app.status.charAt(0).toUpperCase() + app.status.slice(1),
+      appliedDate: new Date(app.createdAt).toLocaleDateString("en-GB"),
     }));
 
-    res.status(200).json({
-      success: true,
-      data: formattedData,
-    });
+    res.status(200).json({ success: true, data: formattedData });
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -259,5 +251,23 @@ export const getTotalJobViewsByEmployer = async(req: AuthenticatedRequest, res: 
     res.json({totalViews})
   } catch(error){
     console.log(error)
+  }
+}
+
+export const getApplicationDetails = async (req: Request, res: Response) =>{
+  try{
+    const {id} = req.params;
+
+    const application = await jobApplication.findById(id)
+    .populate("applicantId", "name email avatar phoneNumber summary experience skills ")
+    .populate("appId", "title");
+
+    if(!application){
+      return res.status(404).json({success: false, message: "Application not found"});
+    }
+
+    res.status(200).json({success: true, data: application});
+  } catch(error: any){
+    res.status(500).json({success: false, message: error.message})
   }
 }
