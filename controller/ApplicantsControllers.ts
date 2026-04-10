@@ -46,16 +46,19 @@ export const getEmployerApplicants = async (req: AuthenticatedRequest, res: Resp
 
       return {
         _id: app._id,
-        name: app.name || "Unknown Applicant", 
-        email: app.email || "N/A", 
-        avatar: "", 
-       jobApplied: jobTitleMap[app.appId.toString()] || "Position Closed", 
+        name: app.name || "Unknown Applicant",
+        email: app.email || "N/A",
+        avatar: "",
+        jobApplied: jobTitleMap[app.appId.toString()] || "Position Closed",
         stage: statusMapping[app.status] || "Applied",
-        appliedDate: new Date((app as any).createdAt).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }),
+        appliedDate: new Date((app as any).createdAt).toLocaleDateString(
+          "en-US",
+          {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          },
+        ),
         rating: 0,
       };
     });
