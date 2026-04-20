@@ -1,5 +1,5 @@
 import type { Request, Response } from "express"; 
-import User from "../models/User.ts";
+import User from "../models/User.js";
 
 
 interface AuthRequest extends Request{
@@ -22,7 +22,7 @@ export const getHiringTrend = async(req: AuthRequest, res:Response): Promise<voi
         startDate.setHours(0,0,0,0)
 
 
-        const stats = await User.aggregate([
+        const stajs = await User.aggregate([
           {
             $match: {
               cratedAt: { $gte: startDate },
@@ -52,7 +52,7 @@ export const getHiringTrend = async(req: AuthRequest, res:Response): Promise<voi
           const mYear = d.getFullYear();
 
 
-          const monthData = stats.find(
+          const monthData = stajs.find(
             (s) => s._id.month === d.getMonth() + 1 && s._id.year === mYear
           );
 

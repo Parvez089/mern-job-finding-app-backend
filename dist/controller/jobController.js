@@ -8,39 +8,66 @@ export const createJob = async (req, res) => {
         if (!user || (user.role !== "employer" && user.role !== "admin")) {
             return res.status(403).json({ success: false, message: "Access denied" });
         }
-        const { title, position, company, city, jobType, location, salary, jobSummary, responsibilities, details, } = req.body;
-        // Validate required fields
-        if (!title ||
-            !position ||
-            !company ||
-            !city ||
-            !jobType ||
-            !location ||
-            !salary) {
+        const { title, department, company, location, jobType, salary, description, skills, perks, cultures, experience, responsibilities, education, visibility, } = req.body;
+        if (!title || !department || !company || !salary || !jobType || !location) {
             return res
                 .status(400)
                 .json({ success: false, message: "Missing required fields" });
         }
         const newJob = await Job.create({
-            ...req.body,
-            createdBy: new mongoose.Types.ObjectId(user.id),
+            title,
+            department,
+            company,
+            location,
+            jobType,
+            salary,
+            description,
+            skills: skills || [],
+            perks: perks || [],
+            cultures: cultures || [],
+            experience: experience,
+            responsibilities: responsibilities || "",
+            education: education || "",
+            visibility: visibility || "public",
+            createdBy: user.id,
+            status: "published",
         });
-        res
-            .status(201)
-            .json({
+        return res.status(201).json({
             success: true,
             message: "Job created successfully",
             job: newJob,
         });
     }
     catch (error) {
-        res.status(500).json({ message: "Error creating job", error });
+        console.error("BACKEND ERROR:", error.message);
+        res.status(500).json({
+            success: false,
+            message: "Failed to create job",
+            error: error.message,
+        });
     }
 };
 export const getAllJobs = async (req, res) => {
     try {
-        const jobs = await Job.find().populate("createdBy", "name role");
-        res.status(200).json(jobs);
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 12;
+        const skip = (page - 1) * limit;
+        const totalJobs = await Job.countDocuments();
+        const jobs = await Job.find()
+            .populate("createdBy", "name role")
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 });
+        const totalPages = Math.ceil(totalJobs / limit);
+        res.status(200).json({
+            jobs,
+            pagination: {
+                totalJobs,
+                totalPages,
+                currentPage: page,
+                pageSize: limit,
+            },
+        });
     }
     catch (error) {
         res.status(500).json({ message: "Error fetching jobs", error });
@@ -73,6 +100,44 @@ export const getSingleJob = async (req, res) => {
         res.status(500).json({
             message: "Error fetching job details",
             error: error.message,
+        });
+    }
+};
+export const updateJob = async (req, res) => {
+    try {
+        const user = req.user;
+        const jobId = req.params.id;
+        // Check access
+        if (!user || (user.role !== "employer" && user.role !== "admin")) {
+            return res.status(403).json({
+                success: false,
+                message: "Access denied! Only employer or admin can edit.",
+            });
+        }
+        const job = await Job.findById(jobId);
+        if (!job) {
+            return res.status(404).json({ success: false, message: "Job not found" });
+        }
+        // Employer can only update his own job
+        if (user.role === "employer" && job.createdBy.toString() !== user.id) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to edit this job",
+            });
+        }
+        // Update job
+        const updatedJob = await Job.findByIdAndUpdate(jobId, { ...req.body }, { new: true, runValidators: true });
+        res.status(200).json({
+            success: true,
+            message: "Job updated successfully",
+            job: updatedJob,
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error updating job",
+            error,
         });
     }
 };
@@ -129,4 +194,31 @@ export const applyJob = async (req, res) => {
             .json({ success: false, message: "Error applying for job", error });
     }
 };
+export const increaseJobView = async (req, res) => {
+    try {
+        const { jobId } = req.params;
+        await Job.findByIdAndUpdate(jobId, { $inc: { views: 1 } });
+        res.json({ message: "View updated" });
+    }
+    catch (err) {
+        res.status(500).json({ error: "Error updating job views" });
+    }
+};
+// export const getRecentJobs = async (req: any, res: Response) =>{
+//   try{
+//     const employerId = req.user.id;
+//     const jobs = (await Job.find({createdBy: employerId})).sort({createdAt: -1}).limit(3).lean<IJob>();
+//     const formattedJobs = jobs.map(job => ({
+//       id: job._id,
+//       title: job.title,
+//       company: job.location,
+//       department: job.department,
+//       datePosted: job.createdAt,
+//       applicanjs: job.applicantCount || 0,
+//       status: job.status,
+//     }))
+//   } catch (error){
+//     res.status(500).json({message: "Error fetching recent jobs"})
+//   }
+// }
 //# sourceMappingURL=jobController.js.map

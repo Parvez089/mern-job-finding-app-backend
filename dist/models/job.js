@@ -4,7 +4,7 @@ const JobSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    position: {
+    department: {
         type: String,
         required: true,
     },
@@ -12,40 +12,52 @@ const JobSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    city: {
+    location: {
         type: String,
         required: true,
+    },
+    isRemote: {
+        type: Boolean,
+        default: false,
     },
     jobType: {
         type: String,
         required: true,
     },
-    location: {
-        type: String,
-        required: true,
-    },
-    rate: {
-        type: String,
-    },
     salary: {
         type: String,
         required: true,
     },
+    //  Description & Responsibilities
     description: {
-        type: String,
-    },
-    jobSummary: {
         type: String,
     },
     responsibilities: {
         type: String,
     },
-    qualifications: {
+    // Requirements Section
+    skills: [{ type: String }],
+    experience: { type: String },
+    education: { type: String },
+    // Team & Culture Section
+    cultures: [{ type: String }],
+    perks: [{ type: String }],
+    teamIntroduction: { type: String },
+    // Status & Visibility
+    status: {
         type: String,
+        enum: ["draft", "published"],
+        default: "draft",
     },
-    details: {
+    visibility: {
         type: String,
+        enum: ["public", "private"],
+        default: "public",
     },
+    externalPosting: {
+        type: Boolean,
+    },
+    views: { type: Number, default: 0 },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

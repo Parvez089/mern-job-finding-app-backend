@@ -2,8 +2,8 @@
 
 
 import type {Request, Response} from "express"
-import cloudinary from '../config/cloudinary.ts';
-import User from "../models/User.ts";
+import cloudinary from '../config/cloudinary.js';
+import User from "../models/User.js";
 interface AuthenticatedRequest extends Request{
     user?: {id: string; role: string; name: string};
 }

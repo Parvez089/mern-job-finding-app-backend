@@ -1,9 +1,9 @@
 
 import { Router } from "express";
 import multer from "multer"; // Middleware for handling file uploads
-import { createApplication, getApplicationByJob, getApplicationDetails, getTotalApplicantsByEmployer, getTotalJobByEmployer, getTotalJobViewsByEmployer,  } from "../controller/jobApplicationController.ts";
-import { verifyToken } from "../middleware/token.ts";
-import { getEmployerStats } from "../controller/EmployerStats.ts";
+import { createApplication, getApplicationByJob, getApplicationDetails, getTotalApplicantsByEmployer, getTotalJobByEmployer, getTotalJobViewsByEmployer,  } from "../controller/jobApplicationController.js";
+import { verifyToken } from "../middleware/token.js";
+import { getEmployerStats } from "../controller/EmployerStats.js";
 
 const router = Router();
 

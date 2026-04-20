@@ -47,5 +47,10 @@
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
     "noEmit": true
+  },
+  "overrides": {
+  "multer-storage-cloudinary": {
+    "cloudinary": "$cloudinary"
   }
+}
 }

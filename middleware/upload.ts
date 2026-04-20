@@ -3,7 +3,7 @@ import multer from "multer";
 import type { Request } from "express"; 
 
 // FIX: Added explicit '.js' extension for ESM compatibility
-import cloudinary from "../config/cloudinary.ts"; 
+import cloudinary from "../config/cloudinary.js"; 
 
 // --- Cloudinary storage setup ---
 const storage = new CloudinaryStorage({

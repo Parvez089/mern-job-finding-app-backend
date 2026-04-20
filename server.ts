@@ -5,8 +5,8 @@ import dbConnect from './config/database.js';
 import userRoutes from './routes/userRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
 import jobApplicationRouter from './routes/applicationRoutes.js';
-import employerRouters from "./routes/employerRoutes.ts";
-import applicantsRouter from "./routes/ApplicantsRoutes.ts";
+import employerRouters from "./routes/employerRoutes.js";
+import applicantsRouter from "./routes/ApplicantsRoutes.js";
 dotenv.config();
 dbConnect();
 

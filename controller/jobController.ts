@@ -275,7 +275,7 @@ export const increaseJobView = async(req: AuthenticatedRequest, res: Response) =
 //       company: job.location,
 //       department: job.department,
 //       datePosted: job.createdAt,
-//       applicants: job.applicantCount || 0,
+//       applicanjs: job.applicantCount || 0,
 //       status: job.status,
 //     }))
 //   } catch (error){

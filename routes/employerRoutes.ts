@@ -2,12 +2,13 @@
 
 import express from "express";
 import multer from "multer";
-import { verifyToken } from "../middleware/token.ts";
+import { verifyToken } from "../middleware/token.js";
 import {
   getEmployerProfile,
   updateEmployerProfile,
-} from "../controller/employerController.ts";
-import { getHiringTrend } from "../controller/ChartStateController.ts";
+} from "../controller/employerController.js";
+import { getHiringTrend } from "../controller/ChartStateController.js";
+
 const router = express.Router();
 
 const upload = multer({ storage: multer.memoryStorage() });

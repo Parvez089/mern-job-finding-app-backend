@@ -1,0 +1,81 @@
+import Job from "../models/job.js";
+import jobApplication from "../models/jobApplication.js";
+export const getEmployerStats = async (req, res) => {
+    try {
+        // step 1 
+        const employerId = req.user.id;
+        const now = new Date();
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        // step 2 
+        const employerJobs = await Job.find({ createdBy: employerId }).select("_id");
+        const jobIds = employerJobs.map(job => job._id.toString());
+        //    step 3
+        const [totalJobs, prevTotalJobs, totalApplicanjs, prevTotalApplicanjs, interviews, prevInterviews, hires, prevHires,] = await Promise.all([
+            // Jobs (createdBy correct naming)
+            Job.countDocuments({ createdBy: employerId }),
+            Job.countDocuments({
+                createdBy: employerId,
+                createdAt: { $lt: thirtyDaysAgo }
+            }),
+            // Applicanjs
+            jobApplication.countDocuments({ appId: { $in: jobIds } }),
+            jobApplication.countDocuments({
+                appId: { $in: jobIds },
+                createdAt: { $lt: thirtyDaysAgo }
+            }),
+            // Interviews
+            jobApplication.countDocuments({
+                appId: { $in: jobIds },
+                status: "interviewing",
+            }),
+            jobApplication.countDocuments({
+                appId: { $in: jobIds },
+                status: "interviewing",
+                createdAt: { $lt: thirtyDaysAgo },
+            }),
+            // Hires
+            jobApplication.countDocuments({
+                appId: { $in: jobIds },
+                status: "hired",
+            }),
+            jobApplication.countDocuments({
+                appId: { $in: jobIds },
+                status: "hired",
+                createdAt: { $lt: thirtyDaysAgo },
+            }),
+        ]);
+        // step 4
+        const calculatePercentage = (current, previous) => {
+            const curr = current || 0;
+            const prev = previous || 0;
+            if (prev === 0)
+                return curr > 0 ? 100 : 0;
+            const diff = ((curr - prev) / prev) * 100;
+            const result = parseFloat(diff.toFixed(1));
+            return isFinite(result) ? result : 0;
+        };
+        res.status(200).json({
+            // main value
+            totalJobs,
+            totalApplicanjs,
+            totalInterviews: interviews,
+            totalHires: hires,
+            //  Dynamic Percentage
+            jobsPercentage: calculatePercentage(totalJobs, prevTotalJobs),
+            applicanjsPercentage: calculatePercentage(totalApplicanjs, prevTotalApplicanjs),
+            interviewsPercentage: calculatePercentage(interviews, prevInterviews),
+            hiresPercentage: calculatePercentage(hires, prevHires),
+            // Up/Down
+            isJobUp: (totalJobs || 0) >= (prevTotalJobs || 0),
+            isApplicanjsUp: (totalApplicanjs || 0) >= (prevTotalApplicanjs || 0),
+            isInterviewsUp: interviews >= prevInterviews,
+            isHiresUp: (hires || 0) >= (prevHires || 0),
+        });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Error fetching stajs", error });
+        console.error("Error in getEmployerStajs:", error);
+    }
+};
+//# sourceMappingURL=EmployerStats.js.map

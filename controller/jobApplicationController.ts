@@ -6,10 +6,10 @@ import type { Request, Response } from "express";
 // Assuming jobApplication.model is the path to your schema file
 
 // CORRECTED: Used datauri-parser (with hyphen)
-import cloudinary from "../config/cloudinary.ts";
+import cloudinary from "../config/cloudinary.js";
 import DataURIParser from "datauri/parser.js";
-import jobApplication from "../models/jobApplication.ts";
-import Job from "../models/job.ts";
+import jobApplication from "../models/jobApplication.js";
+import Job from "../models/job.js";
 import { join } from "path";
 import { stringify } from "querystring";
 
@@ -37,7 +37,7 @@ const handleError = (res: Response, error: unknown, statusCode = 500) => {
 // Initialize DatauriParser
 const parser = new DataURIParser();
 
-// Converts the buffer from multer into a data URI string (e.g., 'data:image/jpeg;base64,...')
+// Converjs the buffer from multer into a data URI string (e.g., 'data:image/jpeg;base64,...')
 const formatBufferToDataUri = (file: Express.Multer.File) =>
   parser.format(file.originalname, file.buffer);
 
@@ -171,7 +171,7 @@ export const getApplicationByJob = async (
   }
 };
 
-// Total Applicants across All jobs of Employer
+// Total Applicanjs across All jobs of Employer
 
 export const getTotalApplicantsByEmployer = async (req: AuthenticatedRequest, res: Response) => {
   try {

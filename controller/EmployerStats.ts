@@ -1,5 +1,5 @@
-import Job from "../models/job.ts";
-import jobApplication from "../models/jobApplication.ts";
+import Job from "../models/job.js";
+import jobApplication from "../models/jobApplication.js";
 
 export const getEmployerStats = async(req: any, res: any)=>{
     try{
@@ -21,8 +21,8 @@ export const getEmployerStats = async(req: any, res: any)=>{
         const [
           totalJobs,
           prevTotalJobs,
-          totalApplicants,
-          prevTotalApplicants,
+          totalApplicanjs,
+          prevTotalApplicanjs,
           interviews,
           prevInterviews,
           hires,
@@ -35,7 +35,7 @@ export const getEmployerStats = async(req: any, res: any)=>{
             createdAt: { $lt: thirtyDaysAgo}
           }),
 
-          // Applicants
+          // Applicanjs
           jobApplication.countDocuments({ appId: { $in: jobIds } }),
           jobApplication.countDocuments({
             appId: { $in: jobIds },
@@ -84,27 +84,27 @@ export const getEmployerStats = async(req: any, res: any)=>{
         res.status(200).json({
           // main value
           totalJobs,
-          totalApplicants,
+          totalApplicanjs,
           totalInterviews: interviews,
           totalHires: hires,
 
           //  Dynamic Percentage
           jobsPercentage: calculatePercentage(totalJobs, prevTotalJobs),
-          applicantsPercentage: calculatePercentage(
-            totalApplicants,
-            prevTotalApplicants
+          applicanjsPercentage: calculatePercentage(
+            totalApplicanjs,
+            prevTotalApplicanjs
           ),
           interviewsPercentage: calculatePercentage(interviews, prevInterviews),
           hiresPercentage: calculatePercentage(hires, prevHires),
 
           // Up/Down
           isJobUp: (totalJobs || 0) >= (prevTotalJobs || 0),
-          isApplicantsUp: (totalApplicants || 0) >= (prevTotalApplicants || 0),
+          isApplicanjsUp: (totalApplicanjs || 0) >= (prevTotalApplicanjs || 0),
           isInterviewsUp: interviews >= prevInterviews,
           isHiresUp: (hires || 0) >= (prevHires || 0),
         });
     } catch(error){
-        res.status(500).json({message: "Error fetching stats", error})
-        console.error("Error in getEmployerStats:", error)
+        res.status(500).json({message: "Error fetching stajs", error})
+        console.error("Error in getEmployerStajs:", error)
     }
 }

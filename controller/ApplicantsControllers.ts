@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import JobApplication from "../models/jobApplication.ts";
-import Job from "../models/job.ts"; 
+import JobApplication from "../models/jobApplication.js";
+import Job from "../models/job.js"; 
 
 
 interface AuthenticatedRequest extends Request {

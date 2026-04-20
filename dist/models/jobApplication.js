@@ -1,37 +1,20 @@
-import mongoose, { Schema } from "mongoose";
+// models/jobApplication.ts
+import mongoose, { Schema, Document, Types } from "mongoose";
 const JobApplicationSchema = new Schema({
     appId: { type: Schema.Types.ObjectId, ref: "Job", required: true },
     applicantId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     name: { type: String, required: true },
-    email: { type: String },
-    resume: {
-        url: String,
-        originalName: String,
-        fileType: String,
-        size: Number,
-        data: Buffer, // OPTIONAL: not recommended for large files
+    status: {
+        type: String,
+        enum: ["pending", "interviewing", "hired", "rejected"],
+        default: "pending",
     },
-    experience: [
-        {
-            company: String,
-            role: String,
-            duration: String,
-        },
-    ],
-    education: [
-        {
-            degree: String,
-            institute: String,
-            year: String,
-        },
-    ],
+    email: String,
     phone: String,
-    address: {
-        city: String,
-        state: String,
-        zip: String,
-    },
+    resume: String,
+    experience: { type: [Schema.Types.Mixed], default: [] },
+    education: { type: [Schema.Types.Mixed], default: [] },
+    address: { type: Schema.Types.Mixed, default: {} },
 }, { timestamps: true });
-const JobApplication = mongoose.model("JobApplication", JobApplicationSchema);
-export default JobApplication;
+export default mongoose.model("JobApplication", JobApplicationSchema);
 //# sourceMappingURL=jobApplication.js.map
