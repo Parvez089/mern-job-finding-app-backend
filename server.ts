@@ -20,7 +20,10 @@ app.use(express.urlencoded({ extended: true }));
 // ✅ CORS middleware
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: [
+      "http://localhost:3000", 
+      "https://mern-job-finding-app-frontend.vercel.app" 
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   }),
