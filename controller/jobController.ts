@@ -114,11 +114,11 @@ export const getAllJobs = async (req: Request, res: Response) => {
     const totalJobs = await Job.countDocuments(queryObject);
 
     
-    const jobs = await Job.find()
-      .populate("createdBy", "name role")
-      .skip(skip)
-      .limit(limitNum)
-      .sort({ createdAt: -1 });
+   const jobs = await Job.find(queryObject)
+  .populate("createdBy", "name role")
+  .skip(skip)
+  .limit(limitNum)
+  .sort({ createdAt: -1 });
 
     const totalPages = Math.ceil(totalJobs / limitNum);
 
