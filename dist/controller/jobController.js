@@ -49,16 +49,33 @@ export const createJob = async (req, res) => {
 };
 export const getAllJobs = async (req, res) => {
     try {
-        const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 12;
-        const skip = (page - 1) * limit;
-        const totalJobs = await Job.countDocuments();
-        const jobs = await Job.find()
+        const { page, limit, search, city, jobType, experience } = req.query;
+        const pageNum = Number(page) || 1;
+        const limitNum = Number(limit) || 12;
+        const skip = (pageNum - 1) * limitNum;
+        let queryObject = {};
+        if (search) {
+            queryObject.$or = [
+                { title: { $regex: search, $options: "i" } },
+                { company: { $regex: search, $options: "i" } }
+            ];
+        }
+        if (city) {
+            queryObject.city = { $regex: city, $options: "i" };
+        }
+        if (jobType) {
+            queryObject.jobType = jobType;
+        }
+        if (experience) {
+            queryObject.experience = experience;
+        }
+        const totalJobs = await Job.countDocuments(queryObject);
+        const jobs = await Job.find(queryObject)
             .populate("createdBy", "name role")
             .skip(skip)
-            .limit(limit)
+            .limit(limitNum)
             .sort({ createdAt: -1 });
-        const totalPages = Math.ceil(totalJobs / limit);
+        const totalPages = Math.ceil(totalJobs / limitNum);
         res.status(200).json({
             jobs,
             pagination: {

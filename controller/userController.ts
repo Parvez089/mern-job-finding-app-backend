@@ -59,6 +59,22 @@ export const login = async (req: Request<{}, {}, RegisterBody>, res: Response) =
             { expiresIn: "2d" }
         )
 
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', 
+            sameSite: 'lax',
+            maxAge: 2 * 24 * 60 * 60 * 1000, 
+            path: '/'
+        });
+
+        res.cookie('role', user.role, {
+            httpOnly: false, 
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 2 * 24 * 60 * 60 * 1000,
+            path: '/'
+        });
+
         res.status(200).json({
             success: true,
             message: "Login successful",
