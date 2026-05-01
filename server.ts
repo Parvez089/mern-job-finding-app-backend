@@ -7,6 +7,7 @@ import jobRoutes from './routes/jobRoutes.js';
 import jobApplicationRouter from './routes/applicationRoutes.js';
 import employerRouters from "./routes/employerRoutes.js";
 import applicantsRouter from "./routes/ApplicantsRoutes.js";
+import jobSeekerRouter from "./routes/jobSeekerRoutes.js";
 dotenv.config();
 dbConnect();
 
@@ -36,6 +37,7 @@ app.use("/api/applications", jobApplicationRouter);
 // app.use("/api/application", applicantsRouter);
 
 app.use("/api/employer", employerRouters);
+app.use("/api/profile", jobSeekerRouter);
 // ✅ Default route
 app.get('/test', (req, res) => {
   res.send('Welcome to my server!');
