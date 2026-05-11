@@ -61,7 +61,7 @@ export const login = async (req: Request<{}, {}, RegisterBody>, res: Response) =
 
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', 
+          secure: false, 
             sameSite: 'lax',
             maxAge: 2 * 24 * 60 * 60 * 1000, 
             path: '/'
@@ -69,7 +69,7 @@ export const login = async (req: Request<{}, {}, RegisterBody>, res: Response) =
 
         res.cookie('role', user.role, {
             httpOnly: false, 
-            secure: process.env.NODE_ENV === 'production',
+            secure: false,
             sameSite: 'lax',
             maxAge: 2 * 24 * 60 * 60 * 1000,
             path: '/'
